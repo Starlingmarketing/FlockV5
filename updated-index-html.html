@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gmail Draft Assistant</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Gmail Draft Assistant</h1>
+        <p>Upload your CSV file and configure settings to generate personalized email drafts.</p>
+        
+        <!-- Display flash messages (errors) -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-danger">
+                    <ul>
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Form for CSV upload and settings -->
+        <form method="post" action="{{ url_for('generate') }}" enctype="multipart/form-data" class="form-container">
+            <div class="form-group">
+                <label for="csv_file">CSV File:</label>
+                <div class="custom-file-upload">
+                    <input type="file" class="form-control-file" id="csv_file" name="csv_file" accept=".csv" required>
+                    <label for="csv_file" class="custom-file-label">Choose File</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="email_column">Email Column (e.g., C):</label>
+                <input type="text" class="form-control" id="email_column" name="email_column" required>
+            </div>
+            <div class="form-group">
+                <label for="first_name_column">First Name Column (e.g., A):</label>
+                <input type="text" class="form-control" id="first_name_column" name="first_name_column" required>
+            </div>
+            <div class="form-group">
+                <label for="company_column">Company Column (e.g., F):</label>
+                <input type="text" class="form-control" id="company_column" name="company_column" required>
+            </div>
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="use_template" name="use_template">
+                <label class="form-check-label" for="use_template">Use Email Template</label>
+            </div>
+            <div class="form-group">
+                <label for="subject_template">Subject Template:</label>
+                <input type="text" class="form-control" id="subject_template" name="subject_template" placeholder="e.g., Hello {first_name} from {company}">
+            </div>
+            <div class="form-group">
+                <label for="body_template">Body Template:</label>
+                <textarea class="form-control" id="body_template" name="body_template" rows="5" placeholder="e.g., Hi {first_name}, I hope you're well at {company}..."></textarea>
+            </div>
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="use_ai" name="use_ai">
+                <label class="form-check-label" for="use_ai">Use Perplexity API for AI-generated content</label>
+            </div>
+            <div class="form-group">
+                <label for="api_key">Perplexity API Key:</label>
+                <input type="password" class="form-control" id="api_key" name="api_key">
+            </div>
+            <div class="form-group">
+                <label for="custom_prompt">Custom AI Prompt:</label>
+                <textarea class="form-control" id="custom_prompt" name="custom_prompt" rows="5" placeholder="Write a friendly outreach email to {first_name} at {company}."></textarea>
+            </div>
+            <button type="submit" class="btn">Generate Emails</button>
+        </form>
+    </div>
+    
+    <script>
+        // Display selected filename in custom file input
+        document.getElementById('csv_file').addEventListener('change', function(e) {
+            var fileName = e.target.files[0].name;
+            var nextSibling = e.target.nextElementSibling;
+            nextSibling.innerText = fileName;
+        });
+    </script>
+</body>
+</html>
